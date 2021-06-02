@@ -44,17 +44,21 @@ public class CaptchaController {
         try {
         	String jsonData = "";
         	
+        	// 서버 연결
         	URL url = new URL(verifyURL);
         	HttpURLConnection huconn = (HttpURLConnection) url.openConnection();
-			huconn.setRequestMethod("POST");
-			huconn.setDoInput(true);
-			huconn.setDoOutput(true);
+			huconn.setRequestMethod("POST");	// 서버 통신 방식 지정
+			huconn.setDoInput(true);		// 서버 통신 시 입력 가능하게 함
+			huconn.setDoOutput(true);		// 서버 통신 시 출력 가능하게 함
 			
+			// 서버로 데이터 보내기
 			DataOutputStream os = new DataOutputStream(huconn.getOutputStream());
-		    os.writeBytes(params);
-			os.flush();
-			os.close();
+		    os.writeBytes(params);	// 보낼 데이터 설정(key)
+			os.flush();		// write함수 실행(아웃풋 스트림의 경우 write 후에 바로 전송X 버퍼가 가득 차거나 flush를 호출 시 전송시작)
+			os.close();		// 전송 완료 후 리소스 반환
 			
+			
+			// 서버에서 데이터 가져옴
 			InputStream is = huconn.getInputStream();
 			BufferedReader br = new BufferedReader(
 							new InputStreamReader(is, "UTF-8"));
@@ -64,10 +68,12 @@ public class CaptchaController {
 				sb.append(jsonData);
 			}
 			
+			// 가져온 데이터 형태를 json형태로 변환
 			JSONParser parser = new JSONParser();
 			Object resvObj = parser.parse(sb.toString());
 			JSONObject jsonObj = (JSONObject) resvObj;
 
+			// 즉, {"success":true|false, ...} 에서 success의 값을 출력한다.
 			System.out.println( jsonObj.get("success") );	//v2
 			//System.out.println( jsonObj.get("score") );	//v3
 			//System.out.println( jsonObj.get("action") );  //v3
